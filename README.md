@@ -76,12 +76,10 @@ Starting dimensions: **4,035 spots × 36,601 genes**
 Three metrics calculated per spot: number of genes detected (`n_genes_by_counts`), total UMI count (`total_counts`), and mitochondrial read percentage (`pct_counts_mt`). Mitochondrial genes are flagged by the `MT-` prefix.
 
 #### Violin Plots
-![Violin Plots]
 
 Each violin shows the distribution of a QC metric across all spots. The width at any value indicates how many spots have that value. What to look for: spots with very few genes are probably empty tissue or damaged; spots with very high mitochondrial percentage are likely dying cells where cytoplasmic RNA has degraded, leaving mitochondrial RNA disproportionately behind.
 
 #### Count & Gene Histograms
-![QC Histograms]
 
 Four panels arranged 2×2. The full-range panels show the overall count/gene distribution across all spots. The zoomed panels crop to spots below 10,000 counts and 4,000 genes respectively — necessary because a handful of high-count outlier spots compress the x-axis in the full-range view, hiding the low-end structure where filtering decisions actually need to be made.
 
@@ -109,7 +107,6 @@ Library-size normalization (`normalize_total`) scales each spot to 10,000 total 
 PCA on the 2,000 HVGs → neighborhood graph → UMAP for visualization → Leiden clustering for community detection. Standard single-cell workflow; the key difference here is that spots rather than cells are the unit of analysis.
 
 #### UMAP Plots
-![UMAP Plots]
 
 Three panels: total counts, genes by counts, and Leiden clusters. The first two panels are a sanity check — if sequencing depth or gene detection were driving the cluster separation, high-count spots would form their own island in UMAP space. Here both metrics are distributed evenly across the clusters, confirming that the Leiden communities reflect transcriptional biology rather than technical variation.
 
@@ -118,17 +115,14 @@ Three panels: total counts, genes by counts, and Leiden clusters. The first two 
 ### Spatial Visualization
 
 #### QC Metrics on Tissue
-![Spatial Overlay — QC]
 
 Total counts and gene detection mapped back onto the tissue image. Even coverage across the section confirms the slide preparation was uniform — no technical gradients confounding downstream results.
 
 #### Leiden Clusters on Tissue
-![Spatial Overlay — Clusters]
 
 The key result of notebook 1. Leiden clustering was computed purely in gene expression space — no coordinates involved. Yet the resulting clusters are spatially coherent: spots in the same cluster tend to occupy the same anatomical region of the lymph node. Spatial coherence that emerges from a coordinate-blind analysis is biological validation that the clusters are real.
 
 #### Zoomed View — Clusters 5 and 9
-![Spatial Overlay — Zoom]
 
 Upper-right region of the tissue, `alpha=0.5` transparency on the colored spots so the underlying H&E morphology shows through. Cluster 9 spots are concentrated in small, discrete, circular foci — morphologically consistent with germinal centers.
 
@@ -139,17 +133,14 @@ Upper-right region of the tissue, `alpha=0.5` transparency on the colored spots 
 `sc.tl.rank_genes_groups` runs a t-test per cluster against all others, ranking genes by differential expression. Top 10 markers for cluster 9 visualized in a heatmap.
 
 #### Marker Gene Heatmap
-![Heatmap]
 
 Each column is a gene, each row is a cluster. Deep color in the cluster 9 row with low expression elsewhere indicates genes specific to that cluster. Specificity here validates that Leiden found biologically distinct populations, not arbitrary groupings.
 
 #### CR2 Expression on Tissue
-![Spatial — CR2]
 
 CR2 (Complement Receptor 2 / CD21) is a surface marker of mature B cells and follicular dendritic cells. Its spatial expression pattern mirrors cluster 9 exactly — confirming that cluster 9 corresponds to germinal center B cells. Germinal centers are where B cells undergo affinity maturation in lymph nodes; their location in discrete foci matches the morphology seen in the zoomed spatial overlay. This gene-to-anatomy match is the strongest validation the pipeline can produce.
 
 #### COL1A2 and SYPL1
-![Spatial — COL1A2/SYPL1]
 
 Two additional genes at `alpha=0.7` transparency. COL1A2 (Collagen Type I Alpha 2) marks stromal fibroblasts — expected in the fibrous capsule and trabeculae surrounding the lymph node, which is what the spatial plot shows. SYPL1 (Synaptophysin-like 1) marks a distinct, non-overlapping region, illustrating that different cell populations occupy spatially segregated niches.
 
@@ -167,14 +158,12 @@ Two linked objects: `adata` (gene expression + pre-annotated clusters) and `img`
 ---
 
 ### Spatial Cluster Reference
-![Cluster Annotation]
 
 Pre-annotated gene expression clusters visualized as the reference. Major anatomical regions are clearly separated — hippocampal layers, cortex, fiber tracts, lateral ventricles — each assigned distinct clusters based on transcriptional profile.
 
 ---
 
 ### Fluorescence Channels
-![Three Fluorescence Channels]
 
 Three channels in the image, each targeting a different biological component:
 
@@ -189,7 +178,6 @@ Each channel is independently informative about a different cell class. Together
 ---
 
 ### Nucleus Segmentation
-![Watershed Segmentation]
 
 **Pre-processing:** DAPI channel smoothed with `sq.im.process(method="smooth")` to reduce noise before segmentation.
 
@@ -207,7 +195,6 @@ Left panel: raw DAPI signal in a 500×500 px region, nuclei visible as bright el
 - Mean NeuN intensity within segmented nuclei per spot
 - Mean GFAP intensity within segmented nuclei per spot
 
-![Segmentation Feature Plots]
 
 Four spatial panels:
 
@@ -233,7 +220,6 @@ Three feature types extracted to characterize image texture beneath each spot:
 
 Extracted at three scales: spot-boundary masked at full resolution, full-resolution with neighborhood context, and downsampled to 25% resolution. All features concatenated → PCA → neighbor graph → Leiden, producing image-derived cluster annotations independent of gene expression.
 
-![Feature Clustering]
 
 **Summary clusters:** Recover major anatomical regions correctly. Broadly separate hippocampus from cortex and fiber tracts. Tend to subdivide the hippocampus into sub-regions that gene clusters merge into one — reflecting real heterogeneity in cell density and staining intensity within the hippocampal field.
 
@@ -246,7 +232,6 @@ Extracted at three scales: spot-boundary masked at full resolution, full-resolut
 ---
 
 ### Quantitative Cross-Modal Validation — Violin Plots
-![Violin Plots]
 
 Four metrics (DAPI, NeuN, GFAP intensity, cell count per spot) plotted as violins per gene expression cluster. This converts the spatial maps' visual impression into a quantitative comparison. Neuron-annotated clusters should be NeuN-high; glial-annotated clusters should be GFAP-high; cell-dense anatomical regions should have higher per-spot cell counts. These violins confirm all three expectations — gene expression clusters and fluorescence image features carry consistent biological information about the tissue.
 
@@ -264,11 +249,9 @@ H&E staining (Haematoxylin and Eosin) stains nuclei blue and cytoplasm pink — 
 ---
 
 ### Cluster Reference + Image Feature Clusters
-![Spatial Cluster Annotation]
 
 Pre-annotated clusters cover major mouse brain structures: Hippocampus, Pyramidal_layer, Pyramidal_layer_dentate_gyrus, Cortex (multiple sub-regions), Fiber_tracts, Lateral_ventricles.
 
-![Gene vs Image Clusters]
 
 Summary image features extracted at scales 1.0 and 2.0 → PCA → Leiden, producing image-derived clusters (left) compared to gene expression clusters (right).
 
@@ -284,7 +267,6 @@ Which cluster pairs are spatially adjacent more or less than expected by chance?
 
 `sq.gr.spatial_neighbors` builds a connectivity graph connecting each spot to its physical neighbors on the tissue. `sq.gr.nhood_enrichment` runs 1,000 permutations — shuffling cluster labels each time — and compares the observed co-adjacency count for each cluster pair against this null distribution. Positive score = more adjacent than chance; negative = spatially segregated.
 
-![Neighbourhood Enrichment]
 
 Warm colors = frequent neighbors; cool colors = spatially separated.
 
@@ -302,7 +284,6 @@ $$\text{score} = \frac{p(\text{exp} \mid \text{cond})}{p(\text{exp})}$$
 
 Score > 1: the two clusters co-occur more than chance at that radius. Score = 1: random. Score < 1: spatial avoidance. Run at increasing radii to reveal both *whether* two clusters are associated and *at what spatial scale*.
 
-![Co-occurrence Scores]
 
 Hippocampus as the anchor cluster. **Pyramidal_layer** shows the highest co-occurrence at short distances, peaking at small radii and decaying toward 1 as distance increases — Pyramidal_layer spots are predominantly immediately surrounding Hippocampus spots, consistent with the pyramidal cell layer forming the inner boundary of the hippocampal region.
 
@@ -324,7 +305,6 @@ Moran's I measures spatial autocorrelation: the degree to which nearby spots hav
 
 `sq.gr.spatial_autocorr(mode="moran")` run on the top 1,000 highly variable genes. Genes with the highest I scores show the strongest, most consistent spatial clustering in their expression patterns.
 
-![Spatially Variable Genes]
 
 Three top-scoring genes visualized spatially alongside the cluster annotation:
 
